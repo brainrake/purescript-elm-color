@@ -1,0 +1,16 @@
+{
+  "name": "purescript-elm-color",
+  "version": "0.1.0",
+  "moduleType": [
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-tuples": "~0.3.0"
+  }
+}
