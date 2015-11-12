@@ -1,7 +1,7 @@
 module Elm.Color
     ( Color(..), rgb, rgba, hsl, hsla, greyscale, grayscale, complem
     , Gradient(..), linear, radial
-    , toRgb, toHsl
+    , toRgb, toHsl, toCss
     , red, orange, yellow, green, blue, purple, brown
     , lightRed, lightOrange, lightYellow, lightGreen, lightBlue, lightPurple, lightBrown
     , darkRed, darkOrange, darkYellow, darkGreen, darkBlue, darkPurple, darkBrown
@@ -63,7 +63,6 @@ data Color
 instance showColor :: Show Color where
   show (RGBA r g b a) = "(RGBA " ++ show r ++ " " ++ show g ++ " " ++ show b ++ " " ++ show a ++ ")"
   show (HSLA h s l a) = "(HSLA " ++ show h ++ " " ++ show s ++ " " ++ show l ++ " " ++ show a ++ ")"
-
 
 {-| Create RGB colors with an alpha component for transparency.
 The alpha component is specified with numbers between 0 and 1. -}
@@ -137,6 +136,11 @@ toRgb color =
                                   , blue  : round (255.0 * b)
                                   , alpha : a
                                   }
+
+{-| CSS string representing the Color. -}
+toCss :: Color -> String
+toCss (RGBA r g b a) = "rgba(" ++ show r ++ ", " ++ show g ++ ", " ++ show b ++ ", " ++ show a ++ ")"
+toCss (HSLA h s l a) = "hsla(" ++ show h ++ ", " ++ show s ++ ", " ++ show l ++ ", " ++ show a ++ ")"
 
 fmod :: Number -> Int -> Number
 fmod f n =
