@@ -1,27 +1,22 @@
-# Module Documentation
-
 ## Module Elm.Color
 
 #### `Color`
 
 ``` purescript
 data Color
-  = RGBA Int Int Int Float
-  | HSLA Float Float Float Float
+  = RGBA Int Int Int Number
+  | HSLA Number Number Number Number
 ```
 
-
-#### `showColor`
-
+##### Instances
 ``` purescript
 instance showColor :: Show Color
 ```
 
-
 #### `rgba`
 
 ``` purescript
-rgba :: Int -> Int -> Int -> Float -> Color
+rgba :: Int -> Int -> Int -> Number -> Color
 ```
 
 #### `rgb`
@@ -35,19 +30,19 @@ Create RGB colors from numbers between 0 and 255 inclusive.
 #### `hsla`
 
 ``` purescript
-hsla :: Float -> Float -> Float -> Float -> Color
+hsla :: Number -> Number -> Number -> Number -> Color
 ```
 
 #### `hsl`
 
 ``` purescript
-hsl :: Float -> Float -> Float -> Color
+hsl :: Number -> Number -> Number -> Color
 ```
 
 #### `grayscale`
 
 ``` purescript
-grayscale :: Float -> Color
+grayscale :: Number -> Color
 ```
 
 Produce a gray based on the input. 0 is white, 1 is black. 
@@ -55,9 +50,8 @@ Produce a gray based on the input. 0 is white, 1 is black.
 #### `greyscale`
 
 ``` purescript
-greyscale :: Float -> Color
+greyscale :: Number -> Color
 ```
-
 
 #### `complem`
 
@@ -68,7 +62,7 @@ complem :: Color -> Color
 #### `toHsl`
 
 ``` purescript
-toHsl :: Color -> { alpha :: Float, lightness :: Float, saturation :: Float, hue :: Float }
+toHsl :: Color -> { hue :: Number, saturation :: Number, lightness :: Number, alpha :: Number }
 ```
 
 Extract the components of a color in the HSL format.
@@ -76,7 +70,7 @@ Extract the components of a color in the HSL format.
 #### `toRgb`
 
 ``` purescript
-toRgb :: Color -> { alpha :: Float, blue :: Int, green :: Int, red :: Int }
+toRgb :: Color -> { red :: Int, green :: Int, blue :: Int, alpha :: Number }
 ```
 
 Extract the components of a color in the RGB format.
@@ -85,20 +79,20 @@ Extract the components of a color in the RGB format.
 
 ``` purescript
 data Gradient
-  = Linear (Tuple Float Float) (Tuple Float Float) [Tuple Float Color]
-  | Radial (Tuple Float Float) Float (Tuple Float Float) Float [Tuple Float Color]
+  = Linear (Tuple Number Number) (Tuple Number Number) (Array (Tuple Number Color))
+  | Radial (Tuple Number Number) Number (Tuple Number Number) Number (Array (Tuple Number Color))
 ```
 
 #### `linear`
 
 ``` purescript
-linear :: Tuple Number Number -> Tuple Number Number -> [Tuple Float Color] -> Gradient
+linear :: Tuple Number Number -> Tuple Number Number -> Array (Tuple Number Color) -> Gradient
 ```
 
 #### `radial`
 
 ``` purescript
-radial :: Tuple Number Number -> Number -> Tuple Number Number -> Number -> [Tuple Float Color] -> Gradient
+radial :: Tuple Number Number -> Number -> Tuple Number Number -> Number -> Array (Tuple Number Color) -> Gradient
 ```
 
 #### `lightRed`
@@ -113,13 +107,11 @@ lightRed :: Color
 red :: Color
 ```
 
-
 #### `darkRed`
 
 ``` purescript
 darkRed :: Color
 ```
-
 
 #### `lightOrange`
 
@@ -127,13 +119,11 @@ darkRed :: Color
 lightOrange :: Color
 ```
 
-
 #### `orange`
 
 ``` purescript
 orange :: Color
 ```
-
 
 #### `darkOrange`
 
@@ -141,13 +131,11 @@ orange :: Color
 darkOrange :: Color
 ```
 
-
 #### `lightYellow`
 
 ``` purescript
 lightYellow :: Color
 ```
-
 
 #### `yellow`
 
@@ -155,13 +143,11 @@ lightYellow :: Color
 yellow :: Color
 ```
 
-
 #### `darkYellow`
 
 ``` purescript
 darkYellow :: Color
 ```
-
 
 #### `lightGreen`
 
@@ -169,13 +155,11 @@ darkYellow :: Color
 lightGreen :: Color
 ```
 
-
 #### `green`
 
 ``` purescript
 green :: Color
 ```
-
 
 #### `darkGreen`
 
@@ -183,13 +167,11 @@ green :: Color
 darkGreen :: Color
 ```
 
-
 #### `lightBlue`
 
 ``` purescript
 lightBlue :: Color
 ```
-
 
 #### `blue`
 
@@ -197,13 +179,11 @@ lightBlue :: Color
 blue :: Color
 ```
 
-
 #### `darkBlue`
 
 ``` purescript
 darkBlue :: Color
 ```
-
 
 #### `lightPurple`
 
@@ -211,13 +191,11 @@ darkBlue :: Color
 lightPurple :: Color
 ```
 
-
 #### `purple`
 
 ``` purescript
 purple :: Color
 ```
-
 
 #### `darkPurple`
 
@@ -225,13 +203,11 @@ purple :: Color
 darkPurple :: Color
 ```
 
-
 #### `lightBrown`
 
 ``` purescript
 lightBrown :: Color
 ```
-
 
 #### `brown`
 
@@ -239,13 +215,11 @@ lightBrown :: Color
 brown :: Color
 ```
 
-
 #### `darkBrown`
 
 ``` purescript
 darkBrown :: Color
 ```
-
 
 #### `black`
 
@@ -253,13 +227,11 @@ darkBrown :: Color
 black :: Color
 ```
 
-
 #### `white`
 
 ``` purescript
 white :: Color
 ```
-
 
 #### `lightGrey`
 
@@ -267,13 +239,11 @@ white :: Color
 lightGrey :: Color
 ```
 
-
 #### `grey`
 
 ``` purescript
 grey :: Color
 ```
-
 
 #### `darkGrey`
 
@@ -281,13 +251,11 @@ grey :: Color
 darkGrey :: Color
 ```
 
-
 #### `lightGray`
 
 ``` purescript
 lightGray :: Color
 ```
-
 
 #### `gray`
 
@@ -295,13 +263,11 @@ lightGray :: Color
 gray :: Color
 ```
 
-
 #### `darkGray`
 
 ``` purescript
 darkGray :: Color
 ```
-
 
 #### `lightCharcoal`
 
@@ -309,20 +275,16 @@ darkGray :: Color
 lightCharcoal :: Color
 ```
 
-
 #### `charcoal`
 
 ``` purescript
 charcoal :: Color
 ```
 
-
 #### `darkCharcoal`
 
 ``` purescript
 darkCharcoal :: Color
 ```
-
-
 
 

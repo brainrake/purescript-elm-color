@@ -49,14 +49,16 @@ that has never helped me remember which one I should be writing.
 
 -}
 
-import Elm.Basics (Int(..), Float(..), turns, degrees, toFloat)
-import Math (pi, max, min, abs, floor, round)
+import Prelude
+import Elm.Basics (turns, degrees)
+import Math (pi, max, min, abs)
+import Data.Int (toNumber, floor, round)
 import Data.Tuple (Tuple(..))
 
 
 data Color
-    = RGBA Int Int Int Float
-    | HSLA Float Float Float Float
+    = RGBA Int Int Int Number
+    | HSLA Number Number Number Number
 
 instance showColor :: Show Color where
   show (RGBA r g b a) = "(RGBA " ++ show r ++ " " ++ show g ++ " " ++ show b ++ " " ++ show a ++ ")"
@@ -65,19 +67,19 @@ instance showColor :: Show Color where
 
 {-| Create RGB colors with an alpha component for transparency.
 The alpha component is specified with numbers between 0 and 1. -}
-rgba :: Int -> Int -> Int -> Float -> Color
+rgba :: Int -> Int -> Int -> Number -> Color
 rgba = RGBA
 
 {-| Create RGB colors from numbers between 0 and 255 inclusive. -}
 rgb :: Int -> Int -> Int -> Color
-rgb r g b = RGBA r g b 1
+rgb r g b = RGBA r g b 1.0
 
 {-| Create [HSL colors](http://en.wikipedia.org/wiki/HSL_and_HSV)
 with an alpha component for transparency.
 -}
-hsla :: Float -> Float -> Float -> Float -> Color
+hsla :: Number -> Number -> Number -> Number -> Color
 hsla hue saturation lightness alpha =
-    HSLA (hue - turns (toFloat (floor (hue / (2*pi))))) saturation lightness alpha
+    HSLA (hue - turns (toNumber (floor (hue / (2.0*pi))))) saturation lightness alpha
 
 {-| Create [HSL colors](http://en.wikipedia.org/wiki/HSL_and_HSV). This gives
 you access to colors more like a color wheel, where all hues are aranged in a
@@ -93,16 +95,16 @@ To cycle through all colors, just cycle through degrees. The saturation level
 is how vibrant the color is, like a dial between grey and bright colors. The
 lightness level is a dial between white and black.
 -}
-hsl :: Float -> Float -> Float -> Color
+hsl :: Number -> Number -> Number -> Color
 hsl hue saturation lightness =
-    hsla hue saturation lightness 1
+    hsla hue saturation lightness 1.0
 
 {-| Produce a gray based on the input. 0 is white, 1 is black. -}
-grayscale :: Float -> Color
-grayscale p = HSLA 0 0 (1-p) 1
+grayscale :: Number -> Color
+grayscale p = HSLA 0.0 0.0 (1.0-p) 1.0
 
-greyscale :: Float -> Color
-greyscale p = HSLA 0 0 (1-p) 1
+greyscale :: Number -> Color
+greyscale p = HSLA 0.0 0.0 (1.0-p) 1.0
 
 {-| Produce a &ldquo;complementary color&rdquo;. The two colors will
 accent each other. This is the same as rotating the hue by 180&deg;.
@@ -110,77 +112,77 @@ accent each other. This is the same as rotating the hue by 180&deg;.
 complem :: Color -> Color
 complem color =
     case color of
-      (HSLA h s l a) -> hsla (h + degrees 180) s l a
-      (RGBA r g b a) -> case rgbToHsl r g b of 
-        (Tuple h (Tuple s l)) -> hsla (h + degrees 180) s l a
+      (HSLA h s l a) -> hsla (h + degrees 180.0) s l a
+      (RGBA r g b a) -> case rgbToHsl r g b of
+        (Tuple h (Tuple s l)) -> hsla (h + degrees 180.0) s l a
 
 {-| Extract the components of a color in the HSL format.
 -}
-toHsl :: Color -> { hue::Float, saturation::Float, lightness::Float, alpha::Float }
+toHsl :: Color -> { hue::Number, saturation::Number, lightness::Number, alpha::Number }
 toHsl color =
     case color of
       (HSLA h s l a) -> { hue:h, saturation:s, lightness:l, alpha:a }
-      (RGBA r g b a) -> case rgbToHsl r g b of 
+      (RGBA r g b a) -> case rgbToHsl r g b of
         (Tuple h (Tuple s l)) -> { hue:h, saturation:s, lightness:l, alpha:a }
 
 {-| Extract the components of a color in the RGB format.
 -}
-toRgb :: Color -> { red::Int, green::Int, blue::Int, alpha::Float }
+toRgb :: Color -> { red::Int, green::Int, blue::Int, alpha::Number }
 toRgb color =
     case color of
       (RGBA r g b a) -> { red:r, green:g, blue:b, alpha:a }
       (HSLA h s l a) -> case hslToRgb h s l of
-        (Tuple r (Tuple g b)) ->  { red   : round (255 * r)
-                                  , green : round (255 * g)
-                                  , blue  : round (255 * b)
+        (Tuple r (Tuple g b)) ->  { red   : round (255.0 * r)
+                                  , green : round (255.0 * g)
+                                  , blue  : round (255.0 * b)
                                   , alpha : a
                                   }
 
-fmod :: Float -> Int -> Float
+fmod :: Number -> Int -> Number
 fmod f n =
   let integer = floor f
-  in  toFloat (integer % n) + f - toFloat integer
+  in  toNumber (integer `mod` n) + f - toNumber integer
 
-rgbToHsl :: Int -> Int -> Int -> (Tuple Float (Tuple Float Float))
+rgbToHsl :: Int -> Int -> Int -> (Tuple Number (Tuple Number Number))
 rgbToHsl red green blue =
-  let r = toFloat red   / 255
-      g = toFloat green / 255
-      b = toFloat blue  / 255
+  let r = toNumber red   / 255.0
+      g = toNumber green / 255.0
+      b = toNumber blue  / 255.0
 
       cMax = max (max r g) b
       cMin = min (min r g) b
 
       c = cMax - cMin
 
-      hue = (degrees 60) * case 0 of 0  | cMax == r -> ((g - b) / c) `fmod` 6
-                                        | cMax == g -> ((b - r) / c) + 2
-                                        | cMax == b -> ((r - g) / c) + 4
+      hue = (degrees 60.0) * case 0 of 0  | cMax == r -> ((g - b) / c) `fmod` 6
+                                          | cMax == g -> ((b - r) / c) + 2.0
+                                          | cMax == b -> ((r - g) / c) + 4.0
 
-      lightness = (cMax + cMin) / 2
+      lightness = (cMax + cMin) / 2.0
 
       saturation =
-          if lightness == 0
-            then 0
-            else c / (1 - abs (2 * lightness - 1))
+          if lightness == 0.0
+            then 0.0
+            else c / (1.0 - abs (2.0 * lightness - 1.0))
   in Tuple hue (Tuple saturation lightness)
 
-hslToRgb :: Float -> Float -> Float -> (Tuple Float (Tuple Float Float))
+hslToRgb :: Number -> Number -> Number -> (Tuple Number (Tuple Number Number))
 hslToRgb hue saturation lightness =
-  let chroma = (1 - abs (2 * lightness - 1)) * saturation
-      hue' = hue / degrees 60
+  let chroma = (1.0 - abs (2.0 * lightness - 1.0)) * saturation
+      hue' = hue / degrees 60.0
 
-      x = chroma * (1 - abs (fmod hue' 2 - 1))
+      x = chroma * (1.0 - abs (fmod hue' 2 - 1.0))
 
-      rgb_ = case x of _  | hue' < 0  -> Tuple 0       (Tuple 0       0)
-                          | hue' < 1  -> Tuple chroma  (Tuple x       0)
-                          | hue' < 2  -> Tuple x       (Tuple chroma  0)
-                          | hue' < 3  -> Tuple 0       (Tuple chroma  x)
-                          | hue' < 4  -> Tuple 0       (Tuple x       chroma)
-                          | hue' < 5  -> Tuple x       (Tuple 0       chroma)
-                          | hue' < 6  -> Tuple chroma  (Tuple 0       x)
-                          | otherwise -> Tuple 0       (Tuple 0       0)
+      rgb_ = case x of _  | hue' < 0.0 -> Tuple 0.0     (Tuple 0.0     0.0)
+                          | hue' < 1.0 -> Tuple chroma  (Tuple x       0.0)
+                          | hue' < 2.0 -> Tuple x       (Tuple chroma  0.0)
+                          | hue' < 3.0 -> Tuple 0.0     (Tuple chroma  x)
+                          | hue' < 4.0 -> Tuple 0.0     (Tuple x       chroma)
+                          | hue' < 5.0 -> Tuple x       (Tuple 0.0     chroma)
+                          | hue' < 6.0 -> Tuple chroma  (Tuple 0.0     x)
+                          | otherwise  -> Tuple 0.0     (Tuple 0.0     0.0)
 
-      m = lightness - chroma / 2
+      m = lightness - chroma / 2.0
   in case rgb_ of (Tuple r (Tuple g b)) -> Tuple (r + m) (Tuple (g + m) (b + m))
 
 --toV3 : Color -> V3
@@ -188,14 +190,14 @@ hslToRgb hue saturation lightness =
 --toV4 : Color -> V4
 
 data Gradient
-  = Linear (Tuple Float Float) (Tuple Float Float) [(Tuple Float Color)]
-  | Radial (Tuple Float Float) Float (Tuple Float Float) Float [(Tuple Float Color)]
+  = Linear (Tuple Number Number) (Tuple Number Number) (Array (Tuple Number Color))
+  | Radial (Tuple Number Number) Number (Tuple Number Number) Number (Array (Tuple Number Color))
 
 {-| Create a linear gradient. Takes a start and end point and then a series of
 &ldquo;color stops&rdquo; that indicate how to interpolate between the start and
 end points. See [this example](http://elm-lang.org/edit/examples/Elements/LinearGradient.elm) for a
 more visual explanation. -}
-linear :: (Tuple Number Number) -> (Tuple Number Number) -> [Tuple Float Color] -> Gradient
+linear :: (Tuple Number Number) -> (Tuple Number Number) -> Array (Tuple Number Color) -> Gradient
 linear = Linear
 
 {-| Create a radial gradient. First takes a start point and inner radius.  Then
@@ -203,83 +205,83 @@ takes an end point and outer radius. It then takes a series of &ldquo;color
 stops&rdquo; that indicate how to interpolate between the inner and outer
 circles. See [this example](http://elm-lang.org/edit/examples/Elements/RadialGradient.elm) for a
 more visual explanation. -}
-radial :: (Tuple Number Number) -> Number -> (Tuple Number Number) -> Number -> [Tuple Float Color] -> Gradient
+radial :: (Tuple Number Number) -> Number -> (Tuple Number Number) -> Number -> Array (Tuple Number Color) -> Gradient
 radial = Radial
 
 
 -- BUILT-IN COLORS
 
 lightRed    :: Color
-lightRed    = RGBA 239 41 41 1
+lightRed    = RGBA 239 41 41 1.0
 red    :: Color
-red    = RGBA 204  0  0 1
+red    = RGBA 204  0  0 1.0
 darkRed    :: Color
-darkRed    = RGBA 164  0  0 1
+darkRed    = RGBA 164  0  0 1.0
 
 lightOrange :: Color
-lightOrange = RGBA 252 175 62 1
+lightOrange = RGBA 252 175 62 1.0
 orange :: Color
-orange = RGBA 245 121  0 1
+orange = RGBA 245 121  0 1.0
 darkOrange :: Color
-darkOrange = RGBA 206  92  0 1
+darkOrange = RGBA 206  92  0 1.0
 
 lightYellow :: Color
-lightYellow = RGBA 255 233 79 1
+lightYellow = RGBA 255 233 79 1.0
 yellow :: Color
-yellow = RGBA 237 212  0 1
+yellow = RGBA 237 212  0 1.0
 darkYellow :: Color
-darkYellow = RGBA 196 160  0 1
+darkYellow = RGBA 196 160  0 1.0
 
 lightGreen  :: Color
-lightGreen  = RGBA 138 226  52 1
+lightGreen  = RGBA 138 226  52 1.0
 green  :: Color
-green  = RGBA 115 210  22 1
+green  = RGBA 115 210  22 1.0
 darkGreen :: Color
-darkGreen  = RGBA  78 154   6 1
+darkGreen  = RGBA  78 154   6 1.0
 
 lightBlue   :: Color
-lightBlue   = RGBA 114 159 207 1
+lightBlue   = RGBA 114 159 207 1.0
 blue   :: Color
-blue   = RGBA  52 101 164 1
+blue   = RGBA  52 101 164 1.0
 darkBlue   :: Color
-darkBlue   = RGBA  32  74 135 1
+darkBlue   = RGBA  32  74 135 1.0
 
 lightPurple :: Color
-lightPurple = RGBA 173 127 168 1
+lightPurple = RGBA 173 127 168 1.0
 purple :: Color
-purple = RGBA 117  80 123 1
+purple = RGBA 117  80 123 1.0
 darkPurple :: Color
-darkPurple = RGBA  92  53 102 1
+darkPurple = RGBA  92  53 102 1.0
 
 lightBrown  :: Color
-lightBrown  = RGBA 233 185 110 1
+lightBrown  = RGBA 233 185 110 1.0
 brown  :: Color
-brown  = RGBA 193 125  17 1
+brown  = RGBA 193 125  17 1.0
 darkBrown  :: Color
-darkBrown  = RGBA 143  89   2 1
+darkBrown  = RGBA 143  89   2 1.0
 
 black         :: Color
-black         = RGBA  0   0   0  1
+black         = RGBA  0   0   0  1.0
 white         :: Color
-white         = RGBA 255 255 255 1
+white         = RGBA 255 255 255 1.0
 
 lightGrey     :: Color
-lightGrey     = RGBA 238 238 236 1
+lightGrey     = RGBA 238 238 236 1.0
 grey          :: Color
-grey          = RGBA 211 215 207 1
+grey          = RGBA 211 215 207 1.0
 darkGrey      :: Color
-darkGrey      = RGBA 186 189 182 1
+darkGrey      = RGBA 186 189 182 1.0
 
 lightGray :: Color
-lightGray = RGBA 238 238 236 1
+lightGray = RGBA 238 238 236 1.0
 gray      :: Color
-gray      = RGBA 211 215 207 1
+gray      = RGBA 211 215 207 1.0
 darkGray  :: Color
-darkGray  = RGBA 186 189 182 1
+darkGray  = RGBA 186 189 182 1.0
 
 lightCharcoal :: Color
-lightCharcoal = RGBA 136 138 133 1
+lightCharcoal = RGBA 136 138 133 1.0
 charcoal      :: Color
-charcoal      = RGBA  85  87  83 1
+charcoal      = RGBA  85  87  83 1.0
 darkCharcoal  :: Color
-darkCharcoal  = RGBA  46  52  54 1
+darkCharcoal  = RGBA  46  52  54 1.0

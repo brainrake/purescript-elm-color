@@ -1,8 +1,9 @@
 module Test.Main where
 
-import Debug.Trace
-import Elm.Basics
-import Elm.Color
+import Prelude (show)
+import Elm.Basics ((<|))
+import Elm.Color (darkCharcoal, complem)
+import Control.Monad.Eff.Console (log)
 
 main = do
-  print <| complem <| darkCharcoal
+  log <| show <| complem <| darkCharcoal
