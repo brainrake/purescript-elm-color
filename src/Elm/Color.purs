@@ -62,7 +62,7 @@ data Color
 
 instance showColor :: Show Color where
   show (RGBA r g b a) = "(RGBA " ++ show r ++ " " ++ show g ++ " " ++ show b ++ " " ++ show a ++ ")"
-  show (HSLA h s l a) = "(RGBA " ++ show h ++ " " ++ show s ++ " " ++ show l ++ " " ++ show a ++ ")"
+  show (HSLA h s l a) = "(HSLA " ++ show h ++ " " ++ show s ++ " " ++ show l ++ " " ++ show a ++ ")"
 
 
 {-| Create RGB colors with an alpha component for transparency.
